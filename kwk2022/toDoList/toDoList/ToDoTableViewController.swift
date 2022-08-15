@@ -69,6 +69,9 @@ class ToDoTableViewController: UITableViewController
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let nextAddToDoVC = segue.destination as? AddToDoViewController {
+            nextAddToDoVC.previousToDoTVC = self
+        }
         // Get the new view controller using segue.destination.
         // Pass the selected object to the new view controller.
     }
