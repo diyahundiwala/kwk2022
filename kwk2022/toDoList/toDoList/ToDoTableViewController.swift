@@ -10,8 +10,9 @@ import UIKit
 class ToDoTableViewController: UITableViewController
 {
 
-    var listOfToDo : [ToDoClass] = []
+    var listOfToDo : [ToDoCD] = []
     
+    /*
     func createToDo() -> [ToDoClass]
     {
         let swiftToDo = ToDoClass()
@@ -23,12 +24,22 @@ class ToDoTableViewController: UITableViewController
         
         return [swiftToDo, dogToDo]
     }
-    
+     */
+    func getToDos() {
+        if let accessToCoreData = (UIApplication.shared.delegate as? AppDelegate)?.persistentContainer.viewContext {
+            
+            if let dataFromCoreData = try? accessToCoreData.fetch(ToDoCD.fetchRequest()) as? [ToDoCD]
+            {
+                listOfToDo = dataFromCoreData
+                tableView.reloadData()
+            }
+        }
+    }
     override func viewDidLoad()
     {
         super.viewDidLoad()
         
-        listOfToDo = createToDo()
+        //listOfToDo = createToDo()
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
@@ -52,13 +63,15 @@ class ToDoTableViewController: UITableViewController
         // Configure the cell...
         let eachToDo = listOfToDo[indexPath.row]
         
-        if eachToDo.important
-        {
-            cell.textLabel?.text = "❗️" + eachToDo.description
-        }
-        else
-        {
-            cell.textLabel?.text = eachToDo.description
+        if let thereIsDescription = eachToDo.descriptionInCD {
+            if eachToDo.importantInCD
+            {
+                cell.textLabel?.text = "❗️" + thereIsDescription
+            }
+            else
+            {
+                cell.textLabel?.text = eachToDo.descriptionInCD
+            }
         }
         
         return cell
@@ -70,7 +83,9 @@ class ToDoTableViewController: UITableViewController
         performSegue(withIdentifier: "moveToCompletedToDoVC", sender: eachToDo)
     }
 
-    
+    override func viewWillAppear(_ animated: Bool) {
+        getToDos()
+    }
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
@@ -79,7 +94,7 @@ class ToDoTableViewController: UITableViewController
             nextAddToDoVC.previousToDoTVC = self
         }
         if let nextCompletedToDoVC = segue.destination as? CompletedToDoViewController {
-            if let choosenToDo = sender as? ToDoClass {
+            if let choosenToDo = sender as? ToDoCD {
                 nextCompletedToDoVC.selectedToDo = choosenToDo
                 nextCompletedToDoVC.previousToDoTVC = self
             }
