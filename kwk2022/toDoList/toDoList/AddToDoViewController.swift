@@ -26,6 +26,7 @@ class AddToDoViewController: UIViewController {
         
         previousToDoTVC.listOfToDo.append(newToDo)
         previousToDoTVC.tableView.reloadData()
+        navigationController?.popViewController(animated: true)
     }
     
 
